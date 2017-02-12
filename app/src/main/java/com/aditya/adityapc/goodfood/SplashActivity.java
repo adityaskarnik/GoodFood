@@ -74,7 +74,7 @@ public class SplashActivity extends Activity{
                     // result of the request.
                 }
             } else {
-                Intent intent = new Intent(SplashActivity.this, MapsActivity.class);
+                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

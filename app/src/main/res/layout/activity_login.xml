@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="center"
+        android:src="@drawable/insta"/>
+
+    <LinearLayout
+        android:visibility="visible"
+        android:id="@+id/selectLoginSignup"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/button_sign_up"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign up"
+            android:textAllCaps="false"
+            android:background="#70ffffff" />
+
+        <include layout="@layout/profile_item_divider" />
+
+        <Button
+            android:id="@+id/button_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textAllCaps="false"
+            android:background="#70ffffff" />
+
+        <include layout="@layout/profile_item_divider" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/button_skip"
+            android:gravity="center"
+            android:background="#70ffffff"
+            android:text="Skip"
+            android:textAllCaps="false" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/login"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/login_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:background="#90ffffff"
+            android:padding="10dp"/>
+
+        <include layout="@layout/profile_item_divider" />
+
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:background="#90ffffff"
+            android:padding="10dp"/>
+
+        <include layout="@layout/profile_item_divider" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/login_submit"
+            android:gravity="center"
+            android:background="#90ffffff"
+            android:text="Submit"
+            android:textAllCaps="false" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/signup"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/signup_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:background="#90ffffff"
+            android:padding="10dp"/>
+
+        <include layout="@layout/profile_item_divider" />
+
+        <EditText
+            android:id="@+id/signup_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:background="#90ffffff"
+            android:padding="10dp"/>
+
+        <include layout="@layout/profile_item_divider" />
+
+        <EditText
+            android:id="@+id/signup_phoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone Number"
+            android:background="#90ffffff"
+            android:padding="10dp"/>
+
+        <include layout="@layout/profile_item_divider" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/signup_submit"
+            android:gravity="center"
+            android:background="#90ffffff"
+            android:text="Submit"
+            android:textAllCaps="false" />
+    </LinearLayout>
+
+
+</FrameLayout>
