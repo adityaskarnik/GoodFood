@@ -14,6 +14,27 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search Location"
+            android:background="#80666666"
+            android:textColorHint="@color/white"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:paddingTop="5dp"
+            android:textColor="@color/white"
+            android:maxLines="1"
+            android:inputType="textAutoComplete"
+            android:layout_margin="15dp"
+            android:drawableLeft="@drawable/ic_search_inactive"
+            android:drawableTint="#ffffff">
+
+
+            <requestFocus />
+        </AutoCompleteTextView>
     </FrameLayout>
 
 </RelativeLayout>
