@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
     EditText loginEmail, loginPassword, signupEmail, signupPassword, signupPhoneNumber;
-    Button signUpButton, loginButton, skipButton, signupSubmitButton, loginSubmitButton;
+    Button signUpButton, loginButton, skipButton, signupSubmitButton, loginSubmitButton, loginCancelButton, signupCancelButton;
     LinearLayout loginLayout, signUpLayout, selectLayout;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +39,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         signupSubmitButton.setOnClickListener(this);
         loginSubmitButton = (Button) findViewById(R.id.login_submit);
         loginSubmitButton.setOnClickListener(this);
+        loginCancelButton = (Button) findViewById(R.id.login_cancel);
+        loginCancelButton.setOnClickListener(this);
+        signupCancelButton = (Button) findViewById(R.id.signup_cancel);
+        signupCancelButton.setOnClickListener(this);
 
         loginLayout = (LinearLayout) findViewById(R.id.login);
         signUpLayout = (LinearLayout) findViewById(R.id.signup);
@@ -51,19 +55,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()) {
             case R.id.button_sign_up :
                 signUpLayout.setVisibility(View.VISIBLE);
+                selectLayout.setVisibility(View.GONE);
+                break;
             case R.id.button_login :
                 loginLayout.setVisibility(View.VISIBLE);
+                selectLayout.setVisibility(View.GONE);
+                break;
             case R.id.button_skip :
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                 startActivity(intent);
                 finish();
+                break;
             case R.id.login_submit :
                 loginEmail.getText().toString();
                 loginPassword.getText().toString();
+                break;
             case R.id.signup_submit :
                 signupEmail.getText().toString();
                 signupPassword.getText().toString();
                 signupPhoneNumber.getText().toString();
+                break;
+            case R.id.login_cancel :
+                loginLayout.setVisibility(View.GONE);
+                selectLayout.setVisibility(View.VISIBLE);
+                break;
+            case R.id.signup_cancel :
+                signUpLayout.setVisibility(View.GONE);
+                selectLayout.setVisibility(View.VISIBLE);
+                break;
         }
     }
 }

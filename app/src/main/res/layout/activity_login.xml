@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:text="Sign up"
             android:textAllCaps="false"
-            android:background="#70ffffff" />
+            android:background="#80ffffff" />
 
         <include layout="@layout/profile_item_divider" />
 
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:text="Login"
             android:textAllCaps="false"
-            android:background="#70ffffff" />
+            android:background="#80ffffff" />
 
         <include layout="@layout/profile_item_divider" />
 
@@ -47,7 +47,7 @@
             android:layout_weight="1"
             android:id="@+id/button_skip"
             android:gravity="center"
-            android:background="#70ffffff"
+            android:background="#80ffffff"
             android:text="Skip"
             android:textAllCaps="false" />
     </LinearLayout>
@@ -66,8 +66,9 @@
             android:id="@+id/login_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
-            android:background="#90ffffff"
+            android:hint="Enter Email"
+            android:background="#95ffffff"
+            android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
 
         <include layout="@layout/profile_item_divider" />
@@ -76,8 +77,9 @@
             android:id="@+id/login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
-            android:background="#90ffffff"
+            android:hint="Enter Password"
+            android:background="#95ffffff"
+            android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
 
         <include layout="@layout/profile_item_divider" />
@@ -87,8 +89,19 @@
             android:layout_height="wrap_content"
             android:id="@+id/login_submit"
             android:gravity="center"
-            android:background="#90ffffff"
+            android:background="#95ffffff"
             android:text="Submit"
+            android:textAllCaps="false" />
+
+        <include layout="@layout/profile_item_divider" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/login_cancel"
+            android:gravity="center"
+            android:background="#95ffffff"
+            android:text="Cancel"
             android:textAllCaps="false" />
     </LinearLayout>
 
@@ -106,8 +119,9 @@
             android:id="@+id/signup_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
-            android:background="#90ffffff"
+            android:hint="Enter Email"
+            android:background="#95ffffff"
+            android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
 
         <include layout="@layout/profile_item_divider" />
@@ -116,8 +130,9 @@
             android:id="@+id/signup_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
-            android:background="#90ffffff"
+            android:hint="Enter Password"
+            android:background="#95ffffff"
+            android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
 
         <include layout="@layout/profile_item_divider" />
@@ -126,8 +141,9 @@
             android:id="@+id/signup_phoneNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Phone Number"
-            android:background="#90ffffff"
+            android:hint="Enter Phone Number"
+            android:background="#95ffffff"
+            android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
 
         <include layout="@layout/profile_item_divider" />
@@ -137,8 +153,19 @@
             android:layout_height="wrap_content"
             android:id="@+id/signup_submit"
             android:gravity="center"
-            android:background="#90ffffff"
+            android:background="#95ffffff"
             android:text="Submit"
+            android:textAllCaps="false" />
+
+        <include layout="@layout/profile_item_divider" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/signup_cancel"
+            android:gravity="center"
+            android:background="#95ffffff"
+            android:text="Cancel"
             android:textAllCaps="false" />
     </LinearLayout>
 
