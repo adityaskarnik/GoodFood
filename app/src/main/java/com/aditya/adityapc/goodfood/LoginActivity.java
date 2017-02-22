@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.button_skip :
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
                 break;
             case R.id.login_submit :
                 loginEmail.getText().toString();

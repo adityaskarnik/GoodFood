@@ -1,6 +1,5 @@
 package com.aditya.adityapc.goodfood;
 
-import android.*;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +8,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -29,7 +29,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aditya.adityapc.goodfood.utils.AppUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -83,6 +82,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String OUT_JSON1 = "/json";
     private static final String API_KEY = "AIzaSyDwei3t9XMZ2YWb6O2wenEzLOgWSaTepZI";
     private ArrayList<PlaceObject> resultList;
+    List<Marker> markerList = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,6 +103,53 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         autoCompView1 = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
         autoCompView1.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.list_item));
         autoCompView1.setOnItemClickListener(this);
+    }
+
+    private class BackgroundOperation extends AsyncTask<Object, Object, ArrayList<PlaceObject>> {
+
+        @Override
+        protected ArrayList<PlaceObject> doInBackground(Object... params) {
+            return resultList = autocomplete("");
+        }
+
+        @Override
+        protected void onPostExecute(final ArrayList<PlaceObject> result) {
+            Geocoder gc = new Geocoder(mContext);
+            Double lat = null, lon = null;
+            LatLng user;
+            final Marker[] marker = new Marker[1];
+            try {
+                for (int i = 0; i < resultList.size(); i++) {
+                    List<Address> addressList = gc.getFromLocationName(resultList.get(i).getPlaceName()+","+resultList.get(i).getPlaceVicinity(), 5);
+                    if (addressList.size() > 0) {
+                        lat = addressList.get(0).getLatitude();
+                        lon = addressList.get(0).getLongitude();
+                        user = new LatLng(lat, lon);
+                        final MarkerOptions markerOptions = new MarkerOptions()
+                                .position(new LatLng(lat, lon))
+                                .title(result.get(i).getPlaceName())
+                                .snippet(result.get(i).getPlaceRating())
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_restaurant));
+                        MapsActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                marker[0] = mMap.addMarker(markerOptions);
+                            }
+                        });
+                        markerList.add(marker[0]);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Log.wtf("BackgroundOperationPostExecute","");
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Object... values) {}
     }
 
     private void turnGPSOn() {
@@ -238,6 +285,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     e.printStackTrace();
                 }
             }
+            new BackgroundOperation().execute(resultList);
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("onLocationChanged", "onLocationChanged Catch");
@@ -293,7 +341,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             TextView tvTitle = ((TextView)myContentsView.findViewById(R.id.title));
             tvTitle.setText(marker.getTitle());
             RatingBar mRatingBarSnippet = ((RatingBar)myContentsView.findViewById(R.id.ratingSnippet));
-            mRatingBarSnippet.setRating(Float.parseFloat(marker.getSnippet()));
+            if (marker.getSnippet()!=null && !marker.getSnippet().equals("")) {
+                mRatingBarSnippet.setRating(Float.parseFloat(marker.getSnippet()));
+            } else
+                mRatingBarSnippet.setRating(0);
 
             return myContentsView;
         }
@@ -505,7 +556,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             for (int j = 0; j < predsJsonArray1.length(); j++) {
                 System.out.println(predsJsonArray1.getJSONObject(j).getString("name"));
                 System.out.println("============================================================");
-                PlaceObject pOBject1 = new PlaceObject(predsJsonArray1.getJSONObject(j).getString("name"), predsJsonArray1.getJSONObject(j).getString("vicinity"), predsJsonArray1.getJSONObject(j).getString("reference"), predsJsonArray1.getJSONObject(j).getString("rating"));
+                PlaceObject pOBject1;
+                if (!predsJsonArray1.getJSONObject(j).has("rating")) {
+                    pOBject1 = new PlaceObject(predsJsonArray1.getJSONObject(j).getString("name"), predsJsonArray1.getJSONObject(j).getString("vicinity"), predsJsonArray1.getJSONObject(j).getString("reference"), "");
+                } else {
+                    pOBject1 = new PlaceObject(predsJsonArray1.getJSONObject(j).getString("name"), predsJsonArray1.getJSONObject(j).getString("vicinity"), predsJsonArray1.getJSONObject(j).getString("reference"), predsJsonArray1.getJSONObject(j).getString("rating"));
+                }
                 resultList.add(pOBject1);
             }
 
