@@ -39,7 +39,7 @@
             android:textAllCaps="false"
             android:background="#80ffffff" />
 
-        <include layout="@layout/profile_item_divider" />
+        <!--<include layout="@layout/profile_item_divider" />
 
         <Button
             android:layout_width="match_parent"
@@ -49,7 +49,7 @@
             android:gravity="center"
             android:background="#80ffffff"
             android:text="Skip"
-            android:textAllCaps="false" />
+            android:textAllCaps="false" />-->
     </LinearLayout>
 
     <LinearLayout
@@ -67,6 +67,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter Email"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
             android:background="#95ffffff"
             android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
@@ -78,6 +80,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter Password"
+            android:inputType="textPassword"
+            android:maxLines="1"
             android:background="#95ffffff"
             android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
@@ -120,6 +124,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter Email"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
             android:background="#95ffffff"
             android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
@@ -131,13 +137,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter Password"
+            android:inputType="textPassword"
+            android:maxLines="1"
             android:background="#95ffffff"
             android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
 
         <include layout="@layout/profile_item_divider" />
 
-        <EditText
+        <!--<EditText
             android:id="@+id/signup_phoneNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -146,7 +154,7 @@
             android:textColorHint="@color/colorAccent"
             android:padding="10dp"/>
 
-        <include layout="@layout/profile_item_divider" />
+        <include layout="@layout/profile_item_divider" />-->
 
         <Button
             android:layout_width="match_parent"

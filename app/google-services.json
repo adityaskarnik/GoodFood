@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "126662054204",
+    "firebase_url": "https://goodfood-1482659175825.firebaseio.com",
+    "project_id": "goodfood-1482659175825",
+    "storage_bucket": "goodfood-1482659175825.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126662054204:android:5014844b63527c77",
+        "android_client_info": {
+          "package_name": "com.aditya.goodfood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126662054204-tvtvjsj5a7ji59i7m08564bd0ppsov99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC5WvXzxA7xBTqrxIZLM-aRLzOe85pJGA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

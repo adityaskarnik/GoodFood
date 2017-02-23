@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 /**
  * Created by Aditya PC on 12/25/2016.
  */
@@ -18,28 +20,22 @@ public class SplashActivity extends Activity{
 
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     LocationManager locationManager;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
+        auth = FirebaseAuth.getInstance();
 
         Thread splash = new Thread(new Runnable() {
             @Override
             public void run() {
-
-
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-
-
-
-
             }
         });
         splash.start();
@@ -73,6 +69,25 @@ public class SplashActivity extends Activity{
                     // app-defined int constant. The callback method gets the
                     // result of the request.
                 }
+            } else {
+                if (auth.getCurrentUser() != null) {
+                    Intent intent = new Intent(SplashActivity.this, MapsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        } else {
+            if (auth.getCurrentUser() != null) {
+                Intent intent = new Intent(SplashActivity.this, MapsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
             } else {
                 Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -109,10 +124,17 @@ public class SplashActivity extends Activity{
                     //currentLatlng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));*/
-                    Intent intent = new Intent(SplashActivity.this, MapsActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
+                    if (auth.getCurrentUser() != null) {
+                        Intent intent = new Intent(SplashActivity.this, MapsActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
 
                 } else {
 

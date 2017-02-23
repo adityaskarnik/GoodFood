@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,6 +32,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.devspark.appmsg.AppMsg;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -44,6 +47,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,6 +64,7 @@ import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 
+import static com.aditya.goodfood.LoginActivity.error;
 import static com.aditya.goodfood.utils.AppUtils.isLocationEnabled;
 
 /**
@@ -86,28 +91,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String API_KEY = "AIzaSyDwei3t9XMZ2YWb6O2wenEzLOgWSaTepZI";
     private ArrayList<PlaceObject> resultList;
     SpotsDialog progressDialog;
+    private FirebaseAuth auth;
     List<Marker> markerList = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        if (isLocationEnabled(MapsActivity.this) == false) {
-            Intent settings = new Intent("com.google.android.gms.location.settings.GOOGLE_LOCATION_SETTINGS");
-            startActivity(settings);
-        }
-        turnGPSOn();
-        mContext = this;
-        FragmentManager myFragmentManager = getSupportFragmentManager();
-        SupportMapFragment mapFragment = (SupportMapFragment) myFragmentManager
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        checkGooglePlayServices();
+        auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            // User is logged in
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            if (isLocationEnabled(MapsActivity.this) == false) {
+                Intent settings = new Intent("com.google.android.gms.location.settings.GOOGLE_LOCATION_SETTINGS");
+                startActivity(settings);
+            }
+            turnGPSOn();
+            mContext = this;
+            FragmentManager myFragmentManager = getSupportFragmentManager();
+            SupportMapFragment mapFragment = (SupportMapFragment) myFragmentManager
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+            checkGooglePlayServices();
 
-        autoCompView1 = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
-        autoCompView1.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.list_item));
-        autoCompView1.setOnItemClickListener(this);
+            autoCompView1 = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
+            autoCompView1.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.list_item));
+            autoCompView1.setOnItemClickListener(this);
+        } else {
+            Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private class BackgroundOperation extends AsyncTask<Object, Object, ArrayList<PlaceObject>> {
@@ -303,7 +317,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     e.printStackTrace();
                 }
             }
-            new BackgroundOperation().execute(resultList);
+            if (isNetworkAvailable()) {
+                new BackgroundOperation().execute(resultList);
+            } else {
+                AppMsg appMsg = AppMsg.makeText(MapsActivity.this, "Network not available", error);
+                appMsg.show();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("onLocationChanged", "onLocationChanged Catch");
@@ -374,32 +393,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Marker searchedMarker = null;
         Double lat, lon;
         String strNew = (String) adapterView.getItemAtPosition(position);
-
-        LatLng user = null;
-        Geocoder gc = new Geocoder(mContext);
+        latLong = new LatLng(Double.valueOf(resultList.get(position).getLat()),Double.valueOf(resultList.get(position).getLon()));
+        //Geocoder gc = new Geocoder(mContext);
         try {
-            List<Address> addressList = gc.getFromLocationName(strNew.toString(), 5);
+            /*List<Address> addressList = gc.getFromLocationName(resultList.get(position).getPlaceName()+","+resultList.get(position).getPlaceVicinity(), 5);
             if (addressList.size() > 0) {
                 lat = addressList.get(0).getLatitude();
                 lon = addressList.get(0).getLongitude();
-                user = new LatLng(lat, lon);
-                latLong = new LatLng(lat, lon);
+                latLong = new LatLng(lat, lon);*/
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(latLong).zoom(16f).build();
                 mMap.animateCamera(CameraUpdateFactory
                         .newCameraPosition(cameraPosition));
-            }
-            if (searchedMarker!=null) {
-                searchedMarker.remove();
-            }
-            searchedMarker = mMap.addMarker(new MarkerOptions()
+            final MarkerOptions markerOptions = new MarkerOptions()
                     .position(latLong)
                     .title(resultList.get(position).getPlaceName())
                     .snippet(resultList.get(position).getPlaceRating())
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_restaurant)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_searched_location));
+            mMap.addMarker(markerOptions);
+
+            //}
+            if (searchedMarker!=null) {
+                searchedMarker.remove();
+            }
             InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -460,6 +479,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     class PlaceObject {
+        private String lat;
+        private String lon;
+
+        public String getLat() {
+            return lat;
+        }
+
+        public void setLat(String lat) {
+            this.lat = lat;
+        }
+
+        public String getLon() {
+            return lon;
+        }
+
+        public void setLon(String lon) {
+            this.lon = lon;
+        }
+
         public String getPlaceName() {
             return placeName;
         }
@@ -500,11 +538,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         private String placeRating;
 
-        public PlaceObject(String pN, String pVicinity, String pID, String pRating) {
+        public PlaceObject(String pN, String pVicinity, String pID, String pRating, String pLat, String pLon) {
             placeId = pID;
             placeName = pN;
             placeVicinity = pVicinity;
             placeRating = pRating;
+            lat = pLat;
+            lon = pLon;
         }
 
     }
@@ -572,13 +612,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             resultList = new ArrayList<PlaceObject>();
 
             for (int j = 0; j < predsJsonArray1.length(); j++) {
+
+                JSONObject geoMetryJO = predsJsonArray1.getJSONObject(j);
+
+                //getting geometry object
+                JSONObject geometry = geoMetryJO.getJSONObject("geometry");
+
+                //getting location object from geometry
+                JSONObject locationJSONObject = geometry.getJSONObject("location");
+
+                //getting lat from location object
+                String Latitude = locationJSONObject.getString("lat");
+                Log.v("Inside JSON Latitude: ", Latitude);
+
+                //getting lon from location object
+                String Longitude = locationJSONObject.getString("lng");
+                Log.v("Inside JSON Longitude: ", Longitude);
+
                 System.out.println(predsJsonArray1.getJSONObject(j).getString("name"));
                 System.out.println("============================================================");
                 PlaceObject pOBject1;
                 if (!predsJsonArray1.getJSONObject(j).has("rating")) {
-                    pOBject1 = new PlaceObject(predsJsonArray1.getJSONObject(j).getString("name"), predsJsonArray1.getJSONObject(j).getString("vicinity"), predsJsonArray1.getJSONObject(j).getString("reference"), "");
+                    pOBject1 = new PlaceObject(predsJsonArray1.getJSONObject(j).getString("name"), predsJsonArray1.getJSONObject(j).getString("vicinity"), predsJsonArray1.getJSONObject(j).getString("reference"), "",Latitude,Longitude);
                 } else {
-                    pOBject1 = new PlaceObject(predsJsonArray1.getJSONObject(j).getString("name"), predsJsonArray1.getJSONObject(j).getString("vicinity"), predsJsonArray1.getJSONObject(j).getString("reference"), predsJsonArray1.getJSONObject(j).getString("rating"));
+                    pOBject1 = new PlaceObject(predsJsonArray1.getJSONObject(j).getString("name"), predsJsonArray1.getJSONObject(j).getString("vicinity"), predsJsonArray1.getJSONObject(j).getString("reference"), predsJsonArray1.getJSONObject(j).getString("rating"),Latitude,Longitude);
                 }
                 resultList.add(pOBject1);
             }
@@ -587,5 +644,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.e("GoodFood", "Cannot process JSON results", e);
         }
         return resultList;
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
