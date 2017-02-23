@@ -72,7 +72,7 @@ import static com.aditya.goodfood.utils.AppUtils.isLocationEnabled;
  */
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener,
+        GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener,GoogleMap.OnInfoWindowClickListener,
         View.OnClickListener, GoogleMap.OnCameraIdleListener, GoogleMap.OnMapLongClickListener, AdapterView.OnItemClickListener {
 
     public static final String GPS = "gps";
@@ -122,6 +122,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(intent);
             finish();
         }
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
     }
 
     private class BackgroundOperation extends AsyncTask<Object, Object, ArrayList<PlaceObject>> {
