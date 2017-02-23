@@ -19,6 +19,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -57,6 +58,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
+
 import static com.aditya.adityapc.goodfood.utils.AppUtils.isLocationEnabled;
 
 /**
@@ -82,12 +85,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String OUT_JSON1 = "/json";
     private static final String API_KEY = "AIzaSyDwei3t9XMZ2YWb6O2wenEzLOgWSaTepZI";
     private ArrayList<PlaceObject> resultList;
+    SpotsDialog progressDialog;
     List<Marker> markerList = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         if (isLocationEnabled(MapsActivity.this) == false) {
             Intent settings = new Intent("com.google.android.gms.location.settings.GOOGLE_LOCATION_SETTINGS");
             startActivity(settings);
@@ -107,19 +112,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private class BackgroundOperation extends AsyncTask<Object, Object, ArrayList<PlaceObject>> {
 
-        @Override
-        protected ArrayList<PlaceObject> doInBackground(Object... params) {
-            return resultList = autocomplete("");
-        }
 
         @Override
-        protected void onPostExecute(final ArrayList<PlaceObject> result) {
+        protected ArrayList<PlaceObject> doInBackground(Object... params) {
+            publishProgress(params[0]);
+            resultList = autocomplete("");
             Geocoder gc = new Geocoder(mContext);
             Double lat = null, lon = null;
             LatLng user;
             final Marker[] marker = new Marker[1];
             try {
                 for (int i = 0; i < resultList.size(); i++) {
+
                     List<Address> addressList = gc.getFromLocationName(resultList.get(i).getPlaceName()+","+resultList.get(i).getPlaceVicinity(), 5);
                     if (addressList.size() > 0) {
                         lat = addressList.get(0).getLatitude();
@@ -127,8 +131,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         user = new LatLng(lat, lon);
                         final MarkerOptions markerOptions = new MarkerOptions()
                                 .position(new LatLng(lat, lon))
-                                .title(result.get(i).getPlaceName())
-                                .snippet(result.get(i).getPlaceRating())
+                                .title(resultList.get(i).getPlaceName())
+                                .snippet(resultList.get(i).getPlaceRating())
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_restaurant));
                         MapsActivity.this.runOnUiThread(new Runnable() {
                             @Override
@@ -142,14 +146,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            return resultList;
+        }
+
+        @Override
+        protected void onPostExecute(final ArrayList<PlaceObject> result) {
+            progressDialog.dismiss();
             Log.wtf("BackgroundOperationPostExecute","");
         }
 
         @Override
-        protected void onPreExecute() {}
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new SpotsDialog(MapsActivity.this, "Finding places nearby..");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
 
         @Override
-        protected void onProgressUpdate(Object... values) {}
+        protected void onProgressUpdate(Object... values) {
+            Log.d("MyAsyncTask","onProgressUpdate");
+            super.onProgressUpdate(values);
+        }
     }
 
     private void turnGPSOn() {
