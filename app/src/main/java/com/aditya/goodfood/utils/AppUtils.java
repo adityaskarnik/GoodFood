@@ -1,4 +1,4 @@
-package com.aditya.adityapc.goodfood.utils;
+package com.aditya.goodfood.utils;
 
 import android.content.Context;
 import android.os.Build;

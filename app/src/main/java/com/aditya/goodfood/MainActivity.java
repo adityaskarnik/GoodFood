@@ -1,4 +1,4 @@
-package com.aditya.adityapc.goodfood;
+package com.aditya.goodfood;
 
 import android.content.Context;
 import android.content.Intent;

@@ -1,4 +1,4 @@
-package com.aditya.adityapc.goodfood;
+package com.aditya.goodfood;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -60,7 +60,7 @@ import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 
-import static com.aditya.adityapc.goodfood.utils.AppUtils.isLocationEnabled;
+import static com.aditya.goodfood.utils.AppUtils.isLocationEnabled;
 
 /**
  * Created by Aditya PC on 12/25/2016.

@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
     defaultConfig {
-        applicationId "com.aditya.adityapc.goodfood"
+        applicationId "com.aditya.goodfood"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1

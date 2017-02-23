@@ -1,4 +1,4 @@
-package com.aditya.adityapc.goodfood;
+package com.aditya.goodfood;
 
 import android.Manifest;
 import android.app.Activity;

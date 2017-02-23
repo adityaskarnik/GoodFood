@@ -1,4 +1,4 @@
-package com.aditya.adityapc.goodfood;
+package com.aditya.goodfood;
 
 import org.junit.Test;
 
