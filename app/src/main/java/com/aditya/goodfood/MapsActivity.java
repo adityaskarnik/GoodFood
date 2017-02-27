@@ -60,7 +60,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 
@@ -81,6 +83,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String URIPARSE = "3";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private GoogleApiClient mGoogleApiClient;
+    ArrayList<HotelRequest> hotels = new ArrayList<HotelRequest>();
     Context mContext;
     AutoCompleteTextView autoCompView1;
     private GoogleMap mMap;
@@ -92,6 +95,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<PlaceObject> resultList;
     SpotsDialog progressDialog;
     private FirebaseAuth auth;
+    private Map<Marker, HotelRequest> allMarkersMap = new HashMap<Marker, HotelRequest>();
     List<Marker> markerList = new ArrayList<Marker>();
 
     @Override
@@ -126,9 +130,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onInfoWindowClick(Marker marker) {
+        Log.d("MakerData",marker.getId()+ " : " + marker.getTag());
+        /*for (int i = 0; i < hotels.size(); i++) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(hotels.get(i).getUrl())));
+        }*/
 
     }
 
+    //google search api
     private class BackgroundOperation extends AsyncTask<Object, Object, ArrayList<PlaceObject>> {
 
 
@@ -170,6 +179,63 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         @Override
         protected void onPostExecute(final ArrayList<PlaceObject> result) {
+            progressDialog.dismiss();
+            Log.wtf("BackgroundOperationPostExecute","");
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new SpotsDialog(MapsActivity.this, "Finding places nearby..");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Object... values) {
+            Log.d("MyAsyncTask","onProgressUpdate");
+            super.onProgressUpdate(values);
+        }
+    }
+
+
+    private class BackgroundOperationSpreadsheet extends AsyncTask<Object, Object, ArrayList<HotelRequest>> {
+
+
+        @Override
+        protected ArrayList<HotelRequest> doInBackground(Object... params) {
+            publishProgress(params[0]);
+            Geocoder gc = new Geocoder(mContext);
+            Double lat = null, lon = null;
+            LatLng user;
+            final Marker[] marker = new Marker[1];
+            try {
+                for (int i = 0; i < hotels.size(); i++) {
+
+                    if (hotels.size()>0) {
+                        final MarkerOptions markerOptions = new MarkerOptions()
+                                .position(new LatLng(Double.valueOf(hotels.get(i).getLat()), Double.valueOf(hotels.get(i).getLon())))
+                                .title(hotels.get(i).getName())
+                                .snippet(hotels.get(i).getRating())
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_restaurant));
+                        MapsActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                marker[0] = mMap.addMarker(markerOptions);
+                            }
+                        });
+//                        marker[0].setTag(hotels.get(i).getUrl());
+                        markerList.add(marker[0]);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return hotels;
+        }
+
+        @Override
+        protected void onPostExecute(final ArrayList<HotelRequest> result) {
             progressDialog.dismiss();
             Log.wtf("BackgroundOperationPostExecute","");
         }
@@ -323,7 +389,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
             if (isNetworkAvailable()) {
-                new BackgroundOperation().execute(resultList);
+                // google places api
+                // new BackgroundOperation().execute(resultList);
+
+                new DownloadWebpageTask(new AsyncResult() {
+                    @Override
+                    public void onResult(JSONObject object) {
+                        processJson(object);
+                    }
+                }).execute("https://spreadsheets.google.com/tq?key=1eLz3Ln48EJnw0BEUsHWHkPgZRpr4UNUJkv6Pi2emydc");
             } else {
                 AppMsg appMsg = AppMsg.makeText(MapsActivity.this, "Network not available", error);
                 appMsg.show();
@@ -363,6 +437,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setTrafficEnabled(true);
         mMap.getUiSettings();
         mMap.setInfoWindowAdapter(new MakerInfoWindowAdapter());
+        mMap.set
     }
 
     class MakerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
@@ -389,6 +464,36 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mRatingBarSnippet.setRating(0);
 
             return myContentsView;
+        }
+    }
+
+    private void processJson(JSONObject object) {
+
+        try {
+            JSONArray rows = object.getJSONArray("rows");
+
+            for (int r = 0; r < rows.length(); ++r) {
+                JSONObject row = rows.getJSONObject(r);
+                JSONArray columns = row.getJSONArray("c");
+
+                String name = columns.getJSONObject(0).getString("v");
+                String lat = columns.getJSONObject(1).getString("v");
+                String lon = columns.getJSONObject(2).getString("v");
+                String url = columns.getJSONObject(3).getString("v");
+                String rating = columns.getJSONObject(4).getString("v");
+                String imageUrl = columns.getJSONObject(5).getString("v");
+                HotelRequest hotelRequest = new HotelRequest(name, lat, lon, url, rating, imageUrl);
+                hotels.add(hotelRequest);
+            }
+
+            // spreadsheet json api
+             new BackgroundOperationSpreadsheet().execute(hotels);
+
+//            final TeamsAdapter adapter = new TeamsAdapter(this, R.layout.team, teams);
+//            listview.setAdapter(adapter);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
