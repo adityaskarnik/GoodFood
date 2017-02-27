@@ -218,13 +218,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 .title(hotels.get(i).getName())
                                 .snippet(hotels.get(i).getRating())
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_restaurant));
+                        final int finalI = i;
                         MapsActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 marker[0] = mMap.addMarker(markerOptions);
+                                marker[0].setTag(hotels.get(finalI));
                             }
                         });
-//                        marker[0].setTag(hotels.get(i).getUrl());
+
                         markerList.add(marker[0]);
                     }
                 }
@@ -437,7 +439,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setTrafficEnabled(true);
         mMap.getUiSettings();
         mMap.setInfoWindowAdapter(new MakerInfoWindowAdapter());
-        mMap.set
     }
 
     class MakerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
@@ -446,6 +447,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         MakerInfoWindowAdapter() {
             myContentsView = getLayoutInflater().inflate(R.layout.custom_info_contents, null);
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    Log.w("marker id",marker.getId());
+                    HotelRequest getHotels = (HotelRequest) marker.getTag();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getHotels.getUrl())));
+                }
+            });
         }
 
         @Override
