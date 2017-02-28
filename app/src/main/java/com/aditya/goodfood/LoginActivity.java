@@ -45,13 +45,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         progressDialog = new SpotsDialog(LoginActivity.this, "Please wait..");
         progressDialog.setCancelable(false);
         loginEmail = (EditText) findViewById(R.id.login_email);
-        loginEmail.setTypeface(Typeface.SERIF);
+        loginEmail.setTypeface(Typeface.SANS_SERIF);
         loginPassword = (EditText) findViewById(R.id.login_password);
-        loginPassword.setTypeface(Typeface.SERIF);
+        loginPassword.setTypeface(Typeface.SANS_SERIF);
         signupEmail = (EditText) findViewById(R.id.signup_email);
-        signupEmail.setTypeface(Typeface.SERIF);
+        signupEmail.setTypeface(Typeface.SANS_SERIF);
         signupPassword = (EditText) findViewById(R.id.signup_password);
-        signupPassword.setTypeface(Typeface.SERIF);
+        signupPassword.setTypeface(Typeface.SANS_SERIF);
         //signupPhoneNumber = (EditText) findViewById(R.id.signup_phoneNumber);
 
         signUpButton = (Button) findViewById(R.id.button_sign_up);

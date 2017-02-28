@@ -452,7 +452,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 public void onInfoWindowClick(Marker marker) {
                     Log.w("marker id",marker.getId());
                     HotelRequest getHotels = (HotelRequest) marker.getTag();
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getHotels.getUrl())));
+                    if (getHotels!=null){
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getHotels.getUrl())));
+                    }
                 }
             });
         }
